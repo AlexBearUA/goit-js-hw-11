@@ -1,27 +1,41 @@
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
 import ImagesApiService from './js/images-service';
+import LoadMoreBtn from './js/components/load-more-btn';
 
 const refs = {
   searchForm: document.querySelector('#search-form'),
   imagesContainer: document.querySelector('.gallery'),
 };
+
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '[data-action="load-more"]',
+  hidden: true,
+});
+
 const imagesApiService = new ImagesApiService();
 
 refs.searchForm.addEventListener('submit', onSearch);
+loadMoreBtn.refs.button.addEventListener('click', fetchImages);
 
 function onSearch(e) {
   e.preventDefault();
-  imagesApiService.query = e.currentTarget.elements.searchQuery.value;
+  imagesApiService.query = e.currentTarget.elements.searchQuery.value.trim();
 
   if (imagesApiService.searchQuery === '') {
     return alert('Введи что-то нормальное');
   }
 
+  imagesApiService.resetPage();
+  clearImagesContainer();
   fetchImages();
 }
 
 function fetchImages() {
-  imagesApiService.fetchImages().then(images => {
+  loadMoreBtn.disable();
+  imagesApiService.fetchImages(loadMoreBtn).then(images => {
     appendImagesMarkup(images);
+    loadMoreBtn.enable();
   });
 }
 
@@ -64,4 +78,8 @@ function createImagesMarkup(images) {
       }
     )
     .join('');
+}
+
+function clearImagesContainer() {
+  refs.imagesContainer.innerHTML = '';
 }
