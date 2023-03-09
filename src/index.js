@@ -1,7 +1,7 @@
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
 import ImagesApiService from './js/images-service';
 import LoadMoreBtn from './js/components/load-more-btn';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const refs = {
   searchForm: document.querySelector('#search-form'),
@@ -22,6 +22,11 @@ loadMoreBtn.refs.button.addEventListener('click', fetchImages);
 
 refs.searchBtn.disabled = true;
 
+const imagesGallery = new SimpleLightbox('.gallery a', {
+  captionDelay: 250,
+  captionsData: 'alt',
+});
+
 function onFormInput(e) {
   e.currentTarget.elements.searchQuery.value.trim() === ''
     ? (refs.searchBtn.disabled = true)
@@ -33,7 +38,6 @@ function onSearch(e) {
   loadMoreBtn.hide();
   imagesApiService.query = e.currentTarget.elements.searchQuery.value.trim();
   imagesApiService.resetPage();
-  imagesApiService.resetHitsCounter();
   clearImagesContainer();
   fetchImages();
 }
@@ -44,6 +48,7 @@ function fetchImages() {
     .fetchImages(loadMoreBtn)
     .then(images => {
       appendImagesMarkup(images);
+      imagesGallery.refresh();
       loadMoreBtn.enable();
     })
     .catch(onFetchError);
@@ -69,7 +74,9 @@ function createImagesMarkup(images) {
         downloads,
       }) => {
         return `<div class="photo-card">
+                <a href="${largeImageURL}">
                   <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+                </a>
                   <div class="info">
                     <p class="info-item">
                       <b>Likes ${likes}</b>

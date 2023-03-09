@@ -19,7 +19,6 @@ export default class ImagesApiService {
       .then(data => {
         const images = data.hits;
         const totalHits = data.totalHits;
-        this.incrementHitsCounter(images.length);
 
         if (images.length === 0) {
           Notify.info(
@@ -30,7 +29,21 @@ export default class ImagesApiService {
           );
           return;
         }
-        if (this.hitsCounter >= totalHits) {
+
+        if (this.page === 1) {
+          data.total <= 500
+            ? Notify.info(`Hooray! We found ${data.total} images!`, {
+                position: 'left-top',
+              })
+            : Notify.info(
+                `Hooray! We found ${data.total} images, but we will show you only ${totalHits}. Ha-ha!`,
+                {
+                  position: 'left-top',
+                }
+              );
+        }
+
+        if (this.perPage * this.page >= totalHits) {
           loadMoreBtn.hide();
           Notify.info(
             "We're sorry, but you've reached the end of search results.",
@@ -44,14 +57,6 @@ export default class ImagesApiService {
         loadMoreBtn.show();
         return images;
       });
-  }
-
-  incrementHitsCounter(hits) {
-    this.hitsCounter += hits;
-  }
-
-  resetHitsCounter() {
-    this.hitsCounter = 0;
   }
 
   incrementPage() {
