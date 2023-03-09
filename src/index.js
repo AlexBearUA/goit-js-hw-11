@@ -48,6 +48,8 @@ function fetchImages() {
     .fetchImages(loadMoreBtn)
     .then(images => {
       appendImagesMarkup(images);
+      console.log(imagesApiService.page);
+      imagesApiService.page !== 2 && scrollOnLoading();
       imagesGallery.refresh();
       loadMoreBtn.enable();
     })
@@ -103,4 +105,15 @@ function clearImagesContainer() {
 
 function onFetchError(error) {
   console.log(error);
+}
+
+function scrollOnLoading() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 1.75,
+    behavior: 'smooth',
+  });
 }
