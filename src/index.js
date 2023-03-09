@@ -6,6 +6,7 @@ import LoadMoreBtn from './js/components/load-more-btn';
 const refs = {
   searchForm: document.querySelector('#search-form'),
   imagesContainer: document.querySelector('.gallery'),
+  searchBtn: document.querySelector('.search-button'),
 };
 
 const loadMoreBtn = new LoadMoreBtn({
@@ -16,27 +17,36 @@ const loadMoreBtn = new LoadMoreBtn({
 const imagesApiService = new ImagesApiService();
 
 refs.searchForm.addEventListener('submit', onSearch);
+refs.searchForm.addEventListener('input', onFormInput);
 loadMoreBtn.refs.button.addEventListener('click', fetchImages);
+
+refs.searchBtn.disabled = true;
+
+function onFormInput(e) {
+  e.currentTarget.elements.searchQuery.value.trim() === ''
+    ? (refs.searchBtn.disabled = true)
+    : (refs.searchBtn.disabled = false);
+}
 
 function onSearch(e) {
   e.preventDefault();
+  loadMoreBtn.hide();
   imagesApiService.query = e.currentTarget.elements.searchQuery.value.trim();
-
-  if (imagesApiService.searchQuery === '') {
-    return alert('Введи что-то нормальное');
-  }
-
   imagesApiService.resetPage();
+  imagesApiService.resetHitsCounter();
   clearImagesContainer();
   fetchImages();
 }
 
 function fetchImages() {
   loadMoreBtn.disable();
-  imagesApiService.fetchImages(loadMoreBtn).then(images => {
-    appendImagesMarkup(images);
-    loadMoreBtn.enable();
-  });
+  imagesApiService
+    .fetchImages(loadMoreBtn)
+    .then(images => {
+      appendImagesMarkup(images);
+      loadMoreBtn.enable();
+    })
+    .catch(onFetchError);
 }
 
 function appendImagesMarkup(images) {
@@ -82,4 +92,8 @@ function createImagesMarkup(images) {
 
 function clearImagesContainer() {
   refs.imagesContainer.innerHTML = '';
+}
+
+function onFetchError(error) {
+  console.log(error);
 }
