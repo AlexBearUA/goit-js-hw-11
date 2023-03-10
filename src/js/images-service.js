@@ -13,9 +13,9 @@ export default class ImagesApiService {
   async fetchImages(loadMoreBtn) {
     const url = `${BASE_URL}/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${this.perPage}&page=${this.page}`;
 
-    const data = await axios.get(url);
-    const images = data.data.hits;
-    const totalHits = data.data.totalHits;
+    const {
+      data: { hits: images, totalHits, total },
+    } = await axios.get(url);
 
     if (images.length === 0) {
       Notify.info(
@@ -28,18 +28,18 @@ export default class ImagesApiService {
     }
 
     if (this.page === 1) {
-      data.total <= 500
-        ? Notify.info(`Hooray! We found ${data.total} images!`, {
+      total <= 500
+        ? Notify.info(`Hooray! We found ${total} images!`, {
             position: 'left-top',
           })
         : Notify.info(
-            `Hooray! We found ${data.total} images, but we will show you only ${totalHits}. Ha-ha!`,
+            `Hooray! We found ${total} images, but we will show you only first ${totalHits}. Ha-ha!`,
             {
               position: 'left-top',
             }
           );
     }
-    console.log(this.perPage, this.page, totalHits);
+
     if (this.perPage * this.page >= totalHits) {
       loadMoreBtn.hide();
       Notify.info(
