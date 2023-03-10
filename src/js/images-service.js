@@ -33,7 +33,7 @@ export default class ImagesApiService {
             position: 'left-top',
           })
         : Notify.info(
-            `Hooray! We found ${total} images, but we will show you only first ${totalHits}. Ha-ha!`,
+            `Hooray! We found ${total} images, but we will show you only first ${totalHits} again and again. Ha-ha!`,
             {
               position: 'left-top',
             }
