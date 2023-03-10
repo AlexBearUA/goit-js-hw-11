@@ -56,6 +56,9 @@ function fetchImages() {
 }
 
 function appendImagesMarkup(images) {
+  if (!images) {
+    return;
+  }
   refs.imagesContainer.insertAdjacentHTML(
     'beforeend',
     createImagesMarkup(images)
