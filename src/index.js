@@ -9,6 +9,8 @@ const refs = {
   searchBtn: document.querySelector('.search-button'),
 };
 
+refs.searchBtn.disabled = true;
+
 const loadMoreBtn = new LoadMoreBtn({
   selector: '[data-action="load-more"]',
   hidden: true,
@@ -16,16 +18,14 @@ const loadMoreBtn = new LoadMoreBtn({
 
 const imagesApiService = new ImagesApiService();
 
-refs.searchForm.addEventListener('submit', onSearch);
-refs.searchForm.addEventListener('input', onFormInput);
-loadMoreBtn.refs.button.addEventListener('click', fetchImages);
-
-refs.searchBtn.disabled = true;
-
 const imagesGallery = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
   captionsData: 'alt',
 });
+
+refs.searchForm.addEventListener('input', onFormInput);
+refs.searchForm.addEventListener('submit', onSearch);
+loadMoreBtn.refs.button.addEventListener('click', fetchImages);
 
 function onFormInput(e) {
   e.currentTarget.elements.searchQuery.value.trim() === ''
@@ -48,8 +48,7 @@ function fetchImages() {
     .fetchImages(loadMoreBtn)
     .then(images => {
       appendImagesMarkup(images);
-      console.log(imagesApiService.page);
-      imagesApiService.page !== 2 && scrollOnLoading();
+      imagesApiService.page > 2 && scrollOnLoading();
       imagesGallery.refresh();
       loadMoreBtn.enable();
     })
