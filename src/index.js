@@ -25,7 +25,7 @@ const imagesGallery = new SimpleLightbox('.gallery a', {
 
 refs.searchForm.addEventListener('input', onFormInput);
 refs.searchForm.addEventListener('submit', onSearch);
-loadMoreBtn.refs.button.addEventListener('click', addImages);
+loadMoreBtn.refs.button.addEventListener('click', onAddImages);
 
 function onFormInput(e) {
   e.currentTarget.elements.searchQuery.value.trim() === ''
@@ -39,11 +39,11 @@ function onSearch(e) {
   imagesApiService.query = e.currentTarget.elements.searchQuery.value.trim();
   imagesApiService.resetPage();
   clearImagesContainer();
-  addImages();
+  onAddImages();
   e.currentTarget.reset();
 }
 
-function addImages() {
+function onAddImages() {
   loadMoreBtn.disable();
   imagesApiService
     .fetchImages(loadMoreBtn)
