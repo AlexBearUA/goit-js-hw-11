@@ -40,7 +40,6 @@ function onSearch(e) {
   imagesApiService.resetPage();
   clearImagesContainer();
   onAddImages();
-  e.currentTarget.reset();
 }
 
 function onAddImages() {
@@ -49,9 +48,6 @@ function onAddImages() {
     .fetchImages(loadMoreBtn)
     .then(images => {
       appendImagesMarkup(images);
-      imagesApiService.page > 2 && scrollOnLoading();
-      imagesGallery.refresh();
-      loadMoreBtn.enable();
     })
     .catch(onFetchError);
 }
@@ -64,6 +60,9 @@ function appendImagesMarkup(images) {
     'beforeend',
     createImagesMarkup(images)
   );
+  imagesApiService.page > 2 && scrollOnLoading();
+  imagesGallery.refresh();
+  loadMoreBtn.enable();
 }
 
 function createImagesMarkup(images) {
