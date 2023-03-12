@@ -11,7 +11,17 @@ export default class ImagesApiService {
   }
 
   async fetchImages(loadMoreBtn) {
-    const url = `${BASE_URL}/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${this.perPage}&page=${this.page}`;
+    const searchParams = new URLSearchParams({
+      key: API_KEY,
+      q: this.searchQuery,
+      image_type: 'photo',
+      orientation: 'horizontal',
+      safesearch: true,
+      per_page: this.perPage,
+      page: this.page,
+    });
+
+    const url = `${BASE_URL}/?${searchParams}`;
 
     const {
       data: { hits: images, totalHits, total },
